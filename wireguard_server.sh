@@ -27,6 +27,7 @@ cat > ${config_file} << EOF
 [Interface]
 PrivateKey = ${server_private}
 ListenPort = ${server_port}
+# 10.0.0.1
 EOF
 
 cat > /etc/hostname.${interface} << EOF
