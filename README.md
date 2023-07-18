@@ -3,7 +3,7 @@
 ## Server
 ```sh
 pkg_add wireguard-tools
-pkg_add qrencode #optional
+pkg_add libqrencode #optional
 sh wireguard_server.sh
 ```
 ### For each client
