@@ -5,7 +5,7 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
-random_digits=$(LC_ALL=C tr -dc 0-9 </dev/urandom | head -c 4)
+random_digits=$(jot -r 1 10000 19999 | cut -c 2-)
 server_port="5${random_digits}"
 interface="wg0"
 config_file="/etc/wireguard/${interface}.conf"
