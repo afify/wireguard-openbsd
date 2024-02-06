@@ -7,7 +7,7 @@
 . "./network.sh"
 
 if [ "$(id -u || true)" -ne 0 ]; then
-	printf "%s\n" "This script must be run as root"; exit 1
+  printf "%s\n" "This script must be run as root"; exit 1
 fi
 
 interactive=${interactive:-0}
@@ -15,33 +15,41 @@ interactive=${interactive:-0}
 server_port=""
 vpn_gateway="10.0.23.1"
 
+handleportflag() {
+if [ "${1}" -gt 1 ] && [ "${1}" -le 65535 ]; then
+  server_port="${1##--port=}"
+else
+  printf "%s\n" "invalid port" >&2; exit 1
+fi
+}
+
+handlenetworkflag() {
+  vpn_gateway="${1}"
+  gatewayvalidateclassa
+}
+
 # flag management
 while test $# -gt 0; do
-	# test if we're using interactive mode first
-	if test "${1}" = "--interactive"; then interactive=1; shift; continue; fi
-	if test "${1}" = "--i"; then interactive=1; shift; continue; fi
-	# then test if port/gateway for network is set on command line
+  # test if we're using interactive mode first
+  if test "${1}" = "--interactive"; then interactive=1; shift; continue; fi
+  if test "${1}" = "--i"; then interactive=1; shift; continue; fi
+  # then test if port/gateway for network is set on command line
   case "$1" in
-  	--port=*) if [ "${1##--port=}" -gt 1 ] && [ "${1##--port=}" -le 65535 ]; then
-  							server_port="${1##--port=}"
-  						else
-  							printf "%s\n" "invalid port" >&2; exit 1
-  						fi
-  						if [ "${2##--network}" != "" ]; then
-								vpn_gateway="${2##--network=}" gatewayvalidateclassa; break
-							fi; shift; continue; break ;;
-  	--network=*) vpn_gateway="${1##--network=}" gatewayvalidateclassa
- 							if [ "${2##--port=}" -gt 1 ] && [ "${2##--port=}" -le 65535 ]; then
-    						server_port="${2##--port=}"
-    					elif [ "${2##--port=}" = "" ]; then
-    						randomport
-    					else
-    						printf "%s\n" "invalid port" >&2; exit 1
-    					fi; shift; continue; break;;
-  	*) printf "%s\n" "Flag not recognized">&2; exit 1;;
+    --port=*) handleportflag "${1##--port=}"; shift; continue; break;;
+    --network=*) handlenetworkflag "${1##--network=}"; shift; continue; break;;
+    *) printf "%s\n" "Flag not recognized">&2; exit 1;;
+  esac
+  case "$2" in
+    --port=*) handleportflag "${2##--port=}"; shift; continue; break;;
+    --network=*) handlenetworkflag "${2##--network=}"; shift; continue; break;;
+    *) printf "%s\n" "Flag not recognized">&2; exit 1;;
   esac
   printf "%s\n" "Unknown option or flag $1" >&2; exit 1
 done
+
+if [ -z ${server_port} ]; then
+  randomport
+fi
 
 printf "Choosing internal VPN gateway IP: %s and external port: %s\n" "${vpn_gateway}" "${server_port}"
 

@@ -17,7 +17,7 @@ gatewayvalidateclassa() {
 
   # if none pass the above validators then we don't have a class A IP address
   if [ "${valid_192_ip}" = "" ] && [ "${valid_10_ip}" = "" ] && [ "${valid_172_ip}" = "" ]; then
-    printf "%s\n" "Error: Gateway IP address invalid. Please enter a valid class A gateway IP address" >&2
+    printf "Error: Gateway IP address %s invalid. Please enter a valid class A gateway IP address\n" "${vpn_gateway}" >&2
     exit 1
   fi
 }
