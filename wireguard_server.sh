@@ -10,8 +10,6 @@ if [ "$(id -u || true)" -ne 0 ]; then
   printf "%s\n" "This script must be run as root"; exit 1
 fi
 
-interactive=${interactive:-0}
-
 server_port=""
 vpn_gateway="10.0.23.1"
 
@@ -29,22 +27,15 @@ handlenetworkflag() {
 }
 
 # flag management
-while test $# -gt 0; do
-  # test if we're using interactive mode first
-  if test "${1}" = "--interactive"; then interactive=1; shift; continue; fi
-  if test "${1}" = "--i"; then interactive=1; shift; continue; fi
-  # then test if port/gateway for network is set on command line
-  case "$1" in
-    --port=*) handleportflag "${1##--port=}"; shift; continue; break;;
-    --network=*) handlenetworkflag "${1##--network=}"; shift; continue; break;;
-    *) printf "%s\n" "Flag not recognized">&2; exit 1;;
-  esac
-  case "$2" in
-    --port=*) handleportflag "${2##--port=}"; shift; continue; break;;
-    --network=*) handlenetworkflag "${2##--network=}"; shift; continue; break;;
-    *) printf "%s\n" "Flag not recognized">&2; exit 1;;
-  esac
-  printf "%s\n" "Unknown option or flag $1" >&2; exit 1
+while [ $# -gt 0 ]; do
+  for flag in "$@"; do
+    case "$flag" in
+      --port=*) validateport "${flag##--port=}"; shift;;
+      --network=*) gatewayvalidateclassa "${flag##--network=}"; shift;;
+      --dns=*) validateip "${flag##--dns=}"; validatedns "${flag##--dns=}"; shift;;
+      *) printf "Flag %s not recognized\n" "${1}">&2; exit 1;;
+    esac
+  done
 done
 
 if [ -z ${server_port} ]; then
@@ -96,5 +87,5 @@ sh /etc/netstart "${interface}"
 pfctl -f /etc/pf.conf
 
 unset gatewayvalidateclassa
-unset interactive
 unset randomport
+unset validatedns
