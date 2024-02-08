@@ -7,14 +7,9 @@ sh wireguard_server.sh
 
 ## Server (Command line switches)
 ```sh
-sh wireguard_server.sh --network=192.168.0.1 --port=51111
+sh wireguard_server.sh --network=192.168.0.1 --port=51111 --dns=1.1.1.1
 ```
 
-## Server (Interactive)
-```sh
-sh wireguard_server.sh --interactive
-
-```
 ## For each client
 ```sh
 sh wireguard_client.sh client_name
