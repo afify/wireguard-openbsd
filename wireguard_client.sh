@@ -4,7 +4,7 @@
 # Written for OpenBSD 7.4
 
 if [ "$(id -u || true)" -ne 0 ]; then
-	printf "%s\n" "This script must be run as root" >&2; exit 1
+  printf "%s\n" "This script must be run as root" >&2; exit 1
 fi
 
 if [ -z "$1" ]; then
@@ -19,7 +19,7 @@ clients_dir="/etc/wireguard/clients"
 server_port=$(grep "ListenPort" "${config_file}" | awk '{print $3}')
 
 last_ip=$(tail -n 1 "${config_file}" |\
-		grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
+  grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
 new_ip=$(printf "%s" "${last_ip}" | awk -F. '{print $1"."$2"."$3"."$4+1}')
 client_ip="${new_ip}/32"
 
