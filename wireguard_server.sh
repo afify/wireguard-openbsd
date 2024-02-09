@@ -11,20 +11,8 @@ if [ "$(id -u || true)" -ne 0 ]; then
 fi
 
 server_port=""
+dns="9.9.9.9"
 vpn_gateway="10.0.23.1"
-
-handleportflag() {
-if [ "${1}" -gt 1 ] && [ "${1}" -le 65535 ]; then
-  server_port="${1##--port=}"
-else
-  printf "%s\n" "invalid port" >&2; exit 1
-fi
-}
-
-handlenetworkflag() {
-  vpn_gateway="${1}"
-  gatewayvalidateclassa
-}
 
 # flag management
 while [ $# -gt 0 ]; do
@@ -38,11 +26,11 @@ while [ $# -gt 0 ]; do
   done
 done
 
-if [ -z ${server_port} ]; then
+if [ -z "${server_port}" ]; then
   randomport
 fi
 
-printf "Choosing internal VPN gateway IP: %s and external port: %s\n" "${vpn_gateway}" "${server_port}"
+printf "Choosing internal VPN gateway IP: %s and external port: %s with primary DNS: %s\n" "${vpn_gateway}" "${server_port}" "${dns}"
 
 # wireguard setup
 interface="wg0"
